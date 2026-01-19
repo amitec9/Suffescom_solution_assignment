@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 require('dotenv').config();
-let url ="mongodb+srv://amitwebappmate:0Se8d8R2tmJ95a0J@cluster0.lj3fcrs.mongodb.net/payment"|| process.env.MONGO_URI;
+let url =process.env.MONGO_URI;
 const connectDB = async () => {
   try {
     
