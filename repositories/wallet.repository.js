@@ -6,11 +6,15 @@ const getWalletByUser = async (userId) => {
 };
 
 const updateBalanceAtomic = async (userId, amount, session) => {
-  return Wallet.findOneAndUpdate(
-    { userId, balance: { $gte: amount } },
-    { $inc: { balance: -amount }, $inc: { version: 1 } },
-    { new: true, session }
-  );
+  const wallet = Wallet.findOneAndUpdate(
+      { userId, balance: { $gte: amount } },
+     {$inc: {
+        balance: -amount,
+        version: 1
+            }},
+      { new: true, session }
+    );
+    return wallet;
 };
 
 module.exports = { getWalletByUser, updateBalanceAtomic };

@@ -6,7 +6,13 @@ const withdrawalSchema = new mongoose.Schema({
   withdrawal_amount: { type: mongoose.Schema.Types.Decimal128, required: true },
   destination: { type: String, required: true },
   status: { type: String, enum: ['PENDING','PROCESSING','SUCCESS','FAILED'], default: 'PENDING' },
-  idempotencyKey: { type: String, unique: true }
-}, { timestamps: true });
-
+  idempotencyKey: {
+      type: String,
+      required: true,
+      unique: true,
+      index: true // 🔥 critical for idempotency
+    }
+  },
+ { timestamps: true });
+withdrawalSchema.index({ idempotencyKey: 1 }, { unique: true });
 module.exports = mongoose.model('Withdrawal', withdrawalSchema);

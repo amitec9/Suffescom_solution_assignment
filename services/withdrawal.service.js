@@ -1,10 +1,18 @@
 // Author: Amit Kumar
+// Description: Withdrawal service with MongoDB transaction + idempotency + async queue
 const mongoose = require('mongoose');
 const Withdrawal = require('../models/Withdrawal');
-const Wallet = require('../models/Wallet');
 const TransactionLog = require('../models/TransactionLog');
 const withdrawalQueue = require('../config/queue');
+const { updateBalanceAtomic } = require('../repositories/wallet.repository');
 
+/**
+ * Initiates a withdrawal request
+ * - Ensures idempotency
+ * - Deducts wallet balance atomically
+ * - Creates withdrawal & transaction log
+ * - Pushes job to Bull queue for async processing
+ */
 const initiateWithdrawal = async (userId, withdrawal_amount, destination, idempotencyKey) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -14,17 +22,17 @@ const initiateWithdrawal = async (userId, withdrawal_amount, destination, idempo
     const existing = await Withdrawal.findOne({ idempotencyKey }).session(session);
     if (existing) return existing;
 
-    // Atomic balance deduction
-    const wallet = await Wallet.findOneAndUpdate(
-      { userId, balance: { $gte: withdrawal_amount } },
-     {$inc: {
-        balance: -withdrawal_amount,
-        version: 1
-            }},
-      { new: true, session }
-    );
+    
+    // Atomic wallet update
+const wallet = await updateBalanceAtomic(
+  userId,
+  withdrawal_amount,
+  session
+);
 
-    if (!wallet) throw new Error('Insufficient balance');
+if (!wallet) {
+  throw new Error('Insufficient balance');
+}
 
     // Create withdrawal
     const withdrawal = await Withdrawal.create([{
@@ -35,13 +43,15 @@ const initiateWithdrawal = async (userId, withdrawal_amount, destination, idempo
       idempotencyKey
     }], { session });
 
+    const afterBalance = Number(wallet.balance);
+const beforeBalance = afterBalance + Number(withdrawal_amount);
     // Create transaction log
     await TransactionLog.create([{
       userId,
       type: 'WITHDRAW',
       refId: withdrawal[0]._id,
-      beforeBalance: wallet.balance + withdrawal_amount,
-      afterBalance: wallet.balance,
+      beforeBalance: beforeBalance,
+      afterBalance: afterBalance,
       status: 'PENDING'
     }], { session });
 
