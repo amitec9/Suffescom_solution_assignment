@@ -10,7 +10,7 @@ const withdrawalSchema = new mongoose.Schema({
       type: String,
       required: true,
       unique: true,
-      index: true // 🔥 critical for idempotency
+      index: true //critical for idempotency
     }
   },
  { timestamps: true });

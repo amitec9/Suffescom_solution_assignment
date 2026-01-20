@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema({
       unique: true,   // uniqueness constraint
       lowercase: true,
       trim: true,
-      index: true     // 🔥 creates index on email
+      index: true     // creates index on email
     },
   password: { type: String, required: true },
   status: { type: String, enum: ['ACTIVE', 'BLOCKED'], default: 'ACTIVE' }

@@ -7,7 +7,7 @@ const walletSchema = new mongoose.Schema({
       ref: 'User',
       required: true,
       unique: true, // one wallet per user
-      index: true   // 🔥 fast lookup
+      index: true   //  fast lookup
     },
   balance: { type: mongoose.Schema.Types.Decimal128, default: 0 },
   version: { type: Number, default: 0 }
