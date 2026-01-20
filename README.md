@@ -57,7 +57,7 @@ token
   idempotency-key: unique-key
 Body:
 {
-  "amount": 100,
+  "withdrawal_amount": 100,
   "destination": "BANK123"
 }
 Queue Workflow
