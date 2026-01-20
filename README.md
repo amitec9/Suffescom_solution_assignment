@@ -17,8 +17,8 @@ Secure & Scalable Payment Withdrawal Backend using Node.js + MongoDB + Bull Queu
 
 1. Clone repo
 ```bash
-git clone <repo-url>
-cd payment-withdrawal
+git clone https://github.com/amitec9/Suffescom_solution_assignment.git
+cd Suffescom_solution_assignment
 Install dependencies
 
 bash
@@ -37,12 +37,7 @@ Run Redis
 bash
 Copy code
 docker run -p 6379:6379 redis
-Seed initial user and wallet
 
-bash
-Copy code
-npm run seed
-Start server
 
 bash
 Copy code
@@ -55,7 +50,7 @@ GET /
 Initiate Withdrawal
 makefile
 Copy code
-POST /api/withdraw
+POST /api/v1/withdraw
 
 Headers:
 token 
@@ -66,7 +61,7 @@ Body:
   "destination": "BANK123"
 }
 Queue Workflow
-User calls POST /api/withdraw
+User calls POST /api/v1/withdraw
 
 Server validates idempotency key
 

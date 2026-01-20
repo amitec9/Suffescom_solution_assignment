@@ -1,9 +1,9 @@
 // Author: Amit Kumar
-const crypto = require('crypto');
 
+const generateIdempotencyKey = require('../helper/idempotency');
 const sendResponse = (res, { ok,data = null, status = 'success', message = '', statusCode = 200, requestId = null }) => {
   if (!requestId) {
-    requestId = crypto.randomUUID(); // generate unique request ID
+    requestId = generateIdempotencyKey(); // generate unique request ID
   }
 
   return res.status(statusCode).json({

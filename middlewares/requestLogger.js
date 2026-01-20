@@ -1,10 +1,11 @@
 // Author: Amit Kumar
 const logger = require('../config/logger');
-const crypto = require('crypto');
+
+const generateIdempotencyKey = require('../helper/idempotency');
 
 const requestLogger = (req, res, next) => {
   const start = Date.now();
-  const requestId = req.headers['x-request-id'] || crypto.randomUUID();
+  const requestId = req.headers['x-request-id'] || generateIdempotencyKey();
   req.requestId = requestId;
 
   // Capture response body
