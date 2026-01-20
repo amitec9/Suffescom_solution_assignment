@@ -17,6 +17,14 @@ const createWithdrawal = async (req, res) => {
     const userId = req.user._id;
         // Request payload
     const { withdrawal_amount, destination } = req.body;
+      if (!withdrawal_amount || !destination ) {
+      return sendResponse(res, {
+        ok: false,
+        status: 'error',
+        message: 'withdrawal_amount and destination are required',
+        statusCode: 400
+      });
+    }
      // Idempotency key from headers
     const idempotencyKey = req.headers['idempotency-key'];
 
